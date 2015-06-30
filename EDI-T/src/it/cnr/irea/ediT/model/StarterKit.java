@@ -2,16 +2,33 @@ package it.cnr.irea.ediT.model;
 
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
+@Entity
+@XmlRootElement
+@NamedQueries(value={
+		@NamedQuery(name="starterKitFromApiKeyAndIp", query="SELECT sk FROM StarterKit sk WHERE sk.apiKey = :apiKey AND sk.ip = :ip"),
+		@NamedQuery(name="listStarterKits", query="SELECT sk FROM StarterKit sk")
+})
 public class StarterKit {
+	@Id
 	private String uri;
 	private boolean allowed;
 	private boolean canAuthorise = false;
 	private String instituteUri;
 	private String contactPersonUri;
+	@Lob @Basic(fetch=FetchType.LAZY)
 	private String xmlMetadata;
 	
+	@OneToMany(mappedBy="starterKit", fetch=FetchType.EAGER)
 	private List<WebServiceEndpoint> endpoints;
 	
 	public List<WebServiceEndpoint> getEndpoints() {

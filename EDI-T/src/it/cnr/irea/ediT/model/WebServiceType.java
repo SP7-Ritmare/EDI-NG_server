@@ -1,7 +1,16 @@
 package it.cnr.irea.ediT.model;
 
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
+@Entity
+@NamedQueries({
+	@NamedQuery(name="listWebServiceTypes", query="SELECT wst FROM WebServiceType wst")
+})
 public class WebServiceType {
+	@EmbeddedId
 	WebServiceTypePK id;
 
 	private String queryString;

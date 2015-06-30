@@ -2,6 +2,9 @@ package it.cnr.irea.ediT.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class WebServiceTypePK implements Serializable {
 	private String name;
 	private String version;

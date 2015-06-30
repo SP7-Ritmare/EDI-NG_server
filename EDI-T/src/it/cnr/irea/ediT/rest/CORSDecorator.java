@@ -11,8 +11,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import com.sun.jersey.spi.inject.Inject;
-
 public class CORSDecorator {
     private Logger log = Logger.getAnonymousLogger();
 

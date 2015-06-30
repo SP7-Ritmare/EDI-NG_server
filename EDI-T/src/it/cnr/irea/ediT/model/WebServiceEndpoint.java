@@ -5,20 +5,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Entity
 @XmlRootElement(name = "endpoint")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NamedQueries(value = {
+		@NamedQuery(name = "listEndpoints", query = "SELECT e FROM WebServiceEndpoint e"),
+		@NamedQuery(name = "deleteEndpointsForStarterKit", query = "DELETE FROM WebServiceEndpoint e WHERE e.starterKit = :sk")
+})
 public class WebServiceEndpoint {
 	// resource urn
+	@Id
 	private String id;
 	
+	@ManyToOne
 	private WebServiceType type;
 	
+	@ManyToOne
 	@JsonIgnore
 	private StarterKit starterKit;
 	

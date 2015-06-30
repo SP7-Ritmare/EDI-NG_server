@@ -2,7 +2,7 @@ package it.cnr.irea.ediT;
 
 import it.cnr.irea.ediT.exception.Settings;
 
-import com.sun.jersey.spi.resource.Singleton;
+import javax.inject.Singleton;
 
 @Singleton
 public class IdGenerator {
