@@ -2,9 +2,11 @@ package it.cnr.irea.ediT;
 
 import it.cnr.irea.ediT.exception.RootElementNotFoundException;
 import it.cnr.irea.ediT.exception.Settings;
+import it.cnr.irea.ediT.model.Setting;
 import it.cnr.irea.ediT.model.TemplateElement;
 import it.cnr.irea.ediT.model.TemplateElementList;
 import it.cnr.irea.ediT.model.TemplateItem;
+import it.cnr.irea.ediT.service.BaseService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +44,9 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.parboiled.common.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -51,11 +56,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+@Controller
 public class MetadataTemplateDocument {
 	private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	private static DocumentBuilder dBuilder;
 	private static XPathFactory xPathfactory = XPathFactory.newInstance();
 	private List<String> messages = new ArrayList<String>();
+	@Autowired
+	BaseService service;
 	String starterKit;
 	
 	/** The xpath. */
@@ -76,14 +84,17 @@ public class MetadataTemplateDocument {
 		
 	private Document output = null;
 
+	public MetadataTemplateDocument() {
+		super();
+	}
 	/*
 	 * Creates a new Metadata Template Document
 	 * @author Fabio Pavesi
 	 * @param templateObject 	the template this instance is supposed to work with
 	 * @param service 			the service to be used to persist results
 	 */
-	public MetadataTemplateDocument(/* MetadataTemplate templateObject, */ byte[] baseDocument) {
-		this.starterKit = Settings.get("serverName");
+	public MetadataTemplateDocument(/* MetadataTemplate templateObject, */ byte[] baseDocument, BaseService service) {
+		this.starterKit = service.getSetting("starterKit", "noSK");
 
 		/*
 		System.setProperty("jaxp.debug","1");

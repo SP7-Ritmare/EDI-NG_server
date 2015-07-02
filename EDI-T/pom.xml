@@ -60,6 +60,10 @@
             <artifactId>hibernate-jpa-2.0-api</artifactId>
             <version>1.0.0.Final</version>
         </dependency>
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-data-solr</artifactId>
+        </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>

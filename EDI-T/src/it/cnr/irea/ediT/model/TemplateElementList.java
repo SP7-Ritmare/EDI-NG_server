@@ -36,7 +36,7 @@ public class TemplateElementList {
 	private Date timestamp = new Date();
 	private String queryString;
 	private String templateName;
-	private int fileId;
+	private String fileId;
 	private URI fileUri;
 	private String user;
 	private String version;
@@ -112,11 +112,11 @@ public class TemplateElementList {
 	}
 
 	@XmlElement(name = "fileId")
-	public int getFileId() {
+	public String getFileId() {
 		return fileId;
 	}
 
-	public void setFileId(int fileId) {
+	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
 

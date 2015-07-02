@@ -6,7 +6,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,11 +42,11 @@ public class Metadata {
 	
 	private URI uri;
 	
-	@Lob
+	@Lob @Basic(fetch=FetchType.LAZY)
 	private String input;
-	@Lob
+	@Lob @Basic(fetch=FetchType.LAZY)
 	private String output;
-	@Lob
+	@Lob @Basic(fetch=FetchType.LAZY)
 	private String template;
 	
 	private Date metadataCreated;
