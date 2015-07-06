@@ -7,7 +7,9 @@ import it.cnr.irea.ediT.exception.HostNotConfiguredException;
 import it.cnr.irea.ediT.exception.Settings;
 import it.cnr.irea.ediT.model.ErrorResponse;
 import it.cnr.irea.ediT.model.Metadata;
+import it.cnr.irea.ediT.model.MetadataListDTO;
 import it.cnr.irea.ediT.model.PostMetadataResponse;
+import it.cnr.irea.ediT.model.ServiceResponse;
 import it.cnr.irea.ediT.model.TemplateElement;
 import it.cnr.irea.ediT.model.TemplateElementList;
 import it.cnr.irea.ediT.model.TemplateItem;
@@ -150,11 +152,18 @@ public class RestBase extends CORSDecorator {
 			//			   return Response.ok(xml).build();
 			   Document xmlDoc = document.getOutput();
 				
-			   
 			   service.saveMetadata(document, xml, elementList);
 
 			   document.saveTo("/tmp/last_md.xml");
-			 
+
+			   try {
+					service.syncMetadata();
+					log.info("sync done");
+				} catch(Exception e) {
+					// do nothing
+					log.severe(e.getMessage());
+				}
+
 			   response.setEdimlId(Integer.parseInt(elementList.getFileId()));
 			   response.setResponseCode(200);
 			   response.setMessages(document.getMessages());
@@ -237,7 +246,7 @@ public class RestBase extends CORSDecorator {
 				if ( elementList != null && (elementList.getFileId() == null || elementList.getFileId().trim().equalsIgnoreCase("")) ) {
 					elementList.setFileId("" + md.getId());
 					elementList.setFileUri(md.getUri());
-					elementList.setStarterKitUri(md.getStarterKit().getUri());
+					elementList.setStarterKitUri(service.getHostName());
 				}
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
@@ -257,4 +266,10 @@ public class RestBase extends CORSDecorator {
 			}
 			return elementList;
 		}
+		
+		@RequestMapping(method = RequestMethod.GET, value = "rest/metadata/sync", produces = MediaType.APPLICATION_JSON_VALUE)
+		public ServiceResponse syncMetadata() {
+			return service.syncMetadata();
+		}
+
 }

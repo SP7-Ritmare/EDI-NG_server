@@ -14,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,14 +24,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
-@XmlRootElement
 /*
  * 
  * @author: Fabio Pavesi
  * @version: 1.0
  * 
  */
+@NamedQueries(value={
+		@NamedQuery(name="mdToSync", query="SELECT m FROM Metadata m WHERE m.synchronised = FALSE")
+})
+
+@Entity
+@XmlRootElement
 public class Metadata {
 	@Transient
 	@Autowired
@@ -39,6 +45,7 @@ public class Metadata {
 	
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
+	
 	
 	private URI uri;
 	
@@ -52,8 +59,7 @@ public class Metadata {
 	private Date metadataCreated;
 	private Date processStarted;
 	private Date processEnded;
-	@ManyToOne
-	private StarterKit starterKit;
+	private boolean synchronised = false;
 	
 	public Metadata() {
 		metadataCreated = new Date();
@@ -132,16 +138,14 @@ public class Metadata {
 		this.template = template;
 	}
 
-	@XmlElement(name="starter-kit")
-	@JsonProperty("starter-kit")
-	public StarterKit getStarterKit() {
-		return starterKit;
+	public boolean isSynchronised() {
+		return synchronised;
 	}
 
-	public void setStarterKit(StarterKit starterKit) {
-		this.starterKit = starterKit;
+	public void setSynchronised(boolean synchronised) {
+		this.synchronised = synchronised;
 	}
-	
+
 	private String getBaseURL() {
 		if ( service != null ) {
 			return service.getSetting("base_url", "https://sp7.irea.cnr.it/jboss/MDService/") + "rest/ediml/";
