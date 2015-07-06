@@ -31,11 +31,15 @@ public class BaseService {
 	EntityManager em;
 	
 	Logger log = Logger.getRootLogger();
+	static int counter = 0;
 
-	@Scheduled(fixedDelay = 1000 * 60 * 5)
+	@Scheduled(fixedDelay = 1000)
 	public void doSync() {
-		log.info("syncing metadata");
-		syncMetadata();
+		if ( ++counter >= Integer.parseInt(getSetting("interval", "3600")) ) {
+			counter = 0;
+			log.info("syncing metadata");
+			syncMetadata();
+		}
 	}
 	
 
