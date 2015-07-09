@@ -132,6 +132,7 @@ public class RestBase extends CORSDecorator {
 				TemplateElementList elementList = (TemplateElementList) 
 				um.unmarshal(new ByteArrayInputStream(xml.getBytes("utf-8")));
 				
+				log.severe("Template: " + elementList.getTemplateDocument().length() + " characters");
 				for ( TemplateElement element : elementList.getElements() ) {
 					for ( TemplateItem item : element.getItems() ) {
 						if ( item.getDataType() == null || item.getDataType().trim().equalsIgnoreCase("") ) {

@@ -72,7 +72,7 @@ public class BaseService {
 		   // metadata.setStarterKit(service.getSetting("starterKit", "noSK"));
 		   metadata.setProcessStarted(new Date());
 		   metadata.setInput(xml);
-			
+		   metadata.setTemplate(elementList.getTemplateDocument());
 		   metadata.setOutput(new String(document.xmlUTF8String(xmlDoc), "utf-8"));
 		   metadata.setProcessEnded(new Date());
 		   metadata.setSynchronised(false);

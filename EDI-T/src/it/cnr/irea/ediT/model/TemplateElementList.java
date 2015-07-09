@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(name = "elements")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = { "generator", "ediVersion", "version", "timestamp", "baseDocument", "xsltChain", "numElements", "templateName", "fileId", "fileUri", "user", "queryString", "elements", "starterKitUri"} )
+@XmlType(propOrder = { "generator", "ediVersion", "version", "timestamp", "baseDocument", "xsltChain", "numElements", "templateName", "templateDocument", "fileId", "fileUri", "user", "queryString", "elements", "starterKitUri"} )
 @JsonPropertyOrder({
 	"generator", 
 	"ediVersion",
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"baseDocument",
 	"xsltChain",
 	"templateName", 
+	"templateDocument",
 	"version", 
 	"fileId", 
 	"fileUri", 
@@ -36,6 +37,7 @@ public class TemplateElementList {
 	private Date timestamp = new Date();
 	private String queryString;
 	private String templateName;
+	private String templateDocument;
 	private String fileId;
 	private URI fileUri;
 	private String user;
@@ -163,7 +165,7 @@ public class TemplateElementList {
 	
 	@XmlElement(name = "generator")
 	public String getGenerator() {
-		return "RITMARE Metadata Utilities Web Service";
+		return "RITMARE EDI_NG Server";
 	}
 
 	public String getStarterKitUri() {
@@ -184,6 +186,15 @@ public class TemplateElementList {
 
 	public void setXsltChain(List<XsltUrl> xsltChain) {
 		this.xsltChain = xsltChain;
+	}
+
+	@XmlElement(name = "templateDocument")
+	public String getTemplateDocument() {
+		return templateDocument;
+	}
+
+	public void setTemplateDocument(String templateDocument) {
+		this.templateDocument = templateDocument;
 	}
 
 	
