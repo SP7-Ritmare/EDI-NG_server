@@ -37,7 +37,7 @@ public class BaseService {
 	public void doSync() {
 		if ( ++counter >= Integer.parseInt(getSetting("interval", "3600")) ) {
 			counter = 0;
-			log.info("syncing metadata");
+			// log.info("syncing metadata");
 			syncMetadata();
 		}
 	}

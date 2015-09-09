@@ -1175,7 +1175,7 @@ public class MetadataTemplateDocument {
 		String attribute = null;
 		String val = null;
 
-		// System.out.println("createOrEditRootNode: " + path);
+		System.out.println("createOrEditRootNode: " + path);
 		
 		XPathExpression expr;
 		if ( nodes.length > 0 && !nodes[0].trim().equalsIgnoreCase("")) {
@@ -1190,11 +1190,13 @@ public class MetadataTemplateDocument {
 						node = node.replaceAll("\\[.*\\]", "");
 						attribute = matcher.group(1);
 						val = matcher.group(2);
+						System.out.println("createOrEditRootNode: @" + attribute + "='" + val + "'");
 						if ( element.getChildNodes().item(i).getNodeName().equalsIgnoreCase(node) ) {
 							if ( element.getChildNodes().item(i).getAttributes().getLength() > 0 ) {
 								for ( int j = 0; j < element.getChildNodes().item(i).getAttributes().getLength(); j++ ) {
 									Node foundAttribute = element.getChildNodes().item(i).getAttributes().getNamedItem(attribute);
 									if ( foundAttribute != null && foundAttribute.getNodeName().equalsIgnoreCase(attribute) && foundAttribute.getNodeValue().equalsIgnoreCase(val) ) {
+										System.out.println("createOrEditRootNode: @" + attribute + "='" + val + "' already in place");
 										found = true;
 										temp = (Element) element.getChildNodes().item(i);
 										break;
@@ -1202,7 +1204,7 @@ public class MetadataTemplateDocument {
 								}
 							}
 							// TODO: verificare 'sto break
-							break;
+							break; 
 						}
 					}
 				} else {
@@ -1227,7 +1229,7 @@ public class MetadataTemplateDocument {
 						val = matcher.group(2);
 					}
 				}
-				// System.out.println("creating node " + node + ", " + attribute + "=" + val);
+				System.out.println("creating node " + node + ", " + attribute + "=" + val);
 				String prefix = "";
 				String namespaceURI = "";
 				if ( node.contains(":") ) {
