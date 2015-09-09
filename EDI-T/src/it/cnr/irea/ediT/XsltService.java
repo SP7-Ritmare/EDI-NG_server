@@ -35,7 +35,8 @@ public class XsltService {
 	private Logger log = Logger.getAnonymousLogger();
 	
 	public void transform(InputStream xslt, InputStream xml, OutputStream outStream, HashMap<String, String> parameters) {
-		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+//		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+		TransformerFactory tFactory = TransformerFactory.newInstance();
 		StreamResult result = new StreamResult(outStream);
 		try {
 			StreamSource xsltSource = new StreamSource(xslt);
@@ -71,7 +72,8 @@ public class XsltService {
 	
 	public byte[] transform(byte[] xslt, byte[] xml, HashMap<String, String> parameters) {
 		// simply transform an xml by an xslt, with optional xslt parameter passing
-		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+//		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+		TransformerFactory tFactory = TransformerFactory.newInstance();
 		
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ByteArrayInputStream xsltStrem = new ByteArrayInputStream(xslt);
@@ -88,7 +90,8 @@ public class XsltService {
 	 */
 	public byte[] transform(String xslt, String xml, HashMap<String, String> parameters) {
 		// simply transform an xml by an xslt, with optional xslt parameter passing
-		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+//		TransformerFactory tFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+		TransformerFactory tFactory = TransformerFactory.newInstance();
 		
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		InputStream xsltStream = null;
