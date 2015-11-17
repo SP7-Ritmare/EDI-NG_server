@@ -627,7 +627,6 @@ public class MetadataTemplateDocument {
 								System.err.println("on element " + nodes[j].substring(1));
 								messages.add("DOM Exception on " + nodes[j].substring(1) + " - " + e.getLocalizedMessage());
 							}
-							last.appendChild(output.createComment(comment));
 							if ( item.getFixed() != null) {
 								comment += "\nisFixed: " + item.getFixed();
 //									last.setAttribute("ediFixed", item.getFixed());
@@ -636,6 +635,7 @@ public class MetadataTemplateDocument {
 								comment += "\nhasDatatype: " + item.getDataType();
 //									last.setAttribute("ediDatatype", item.getDataType());
 							}
+//							last.appendChild(output.createComment(comment));
 						} else {
 							try {
 								found = false;
