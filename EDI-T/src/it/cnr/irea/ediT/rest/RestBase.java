@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -273,4 +274,10 @@ public class RestBase extends CORSDecorator {
 			return service.syncMetadata();
 		}
 
+		@RequestMapping(method = RequestMethod.GET, value = "rest/test", produces = MediaType.APPLICATION_JSON_VALUE)
+		public String test(HttpServletRequest request) {
+			String restOfTheUrl = (String) request.getAttribute(
+			        HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+			return "{\"url\": \"" + request.getRequestURL().toString() + "\", \"forwarded\":\"" + request.getHeader("X-Forwarded-Host") + "\"}";
+		}
 }
