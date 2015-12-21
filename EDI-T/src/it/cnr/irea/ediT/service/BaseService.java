@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,12 @@ public class BaseService {
 	@Transactional(readOnly = true)
 	public String getSetting(String setting, String defaultValue) {
 		Setting result = em.find(Setting.class, setting);
+		if ( result == null ) {
+			result = new Setting();
+			result.setId(setting);
+			result.setValue(defaultValue);
+			em.persist(result);
+		}
 		return ( result != null ? result.getValue() : defaultValue );
 	}
 
@@ -60,8 +67,19 @@ public class BaseService {
 		return md;
 	}
 
+	public boolean isTestServer(HttpServletRequest req) {
+		String requestUrl = req.getHeader("X-Forwarded-Host");
+		String testServerPattern = getSetting("testServerPattern", "edidemo.get-it.it");
+		
+		if ( requestUrl.contains(testServerPattern) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	@Transactional(readOnly = false)
-	public void saveMetadata(MetadataTemplateDocument document, String xml, TemplateElementList elementList) throws UnsupportedEncodingException {
+	public void saveMetadata(MetadataTemplateDocument document, String xml, TemplateElementList elementList, boolean isTest) throws UnsupportedEncodingException {
 	   Document xmlDoc = document.getOutput();
 		Metadata metadata = null;
 		   if ( elementList.getFileId() != null && !elementList.getFileId().trim().equalsIgnoreCase("") ) {

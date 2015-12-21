@@ -154,7 +154,7 @@ public class RestBase extends CORSDecorator {
 			//			   return Response.ok(xml).build();
 			   Document xmlDoc = document.getOutput();
 				
-			   service.saveMetadata(document, xml, elementList);
+			   service.saveMetadata(document, xml, elementList, service.isTestServer(req));
 
 			   document.saveTo("/tmp/last_md.xml");
 

@@ -60,6 +60,7 @@ public class Metadata {
 	private Date processStarted;
 	private Date processEnded;
 	private boolean synchronised = false;
+	private boolean isTest = false;
 	
 	public Metadata() {
 		metadataCreated = new Date();
@@ -152,6 +153,14 @@ public class Metadata {
 		} else {
 			return "no base url";
 		}
+	}
+
+	public boolean isTest() {
+		return isTest;
+	}
+
+	public void setTest(boolean isTest) {
+		this.isTest = isTest;
 	}
 	
 	
