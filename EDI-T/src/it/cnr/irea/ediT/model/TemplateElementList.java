@@ -14,10 +14,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(name = "elements")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = { "generator", "ediVersion", "version", "timestamp", "baseDocument", "xsltChain", "numElements", "templateName", "templateDocument", "fileId", "fileUri", "user", "queryString", "elements", "starterKitUri"} )
+@XmlType(propOrder = { "generator", "ediVersion", "version", "timestamp", "baseDocument", "xsltChain", "numElements", "templateName", "templateDocument", "fileId", "fileUri", "user", "queryString", "elements", "starterKit", "starterKitUri"} )
 @JsonPropertyOrder({
 	"generator", 
 	"ediVersion",
+	"starterKit", 
 	"starterKitUri", 
 	"timestamp",
 	"baseDocument",
@@ -42,6 +43,7 @@ public class TemplateElementList {
 	private URI fileUri;
 	private String user;
 	private String version;
+	private String starterKit;
 	private String starterKitUri;
 	private String baseDocument;
 	private List<XsltUrl> xsltChain;
@@ -68,6 +70,14 @@ public class TemplateElementList {
 		return null;
 	}
 	
+	public String getStarterKit() {
+		return starterKit;
+	}
+
+	public void setStarterKit(String starterKit) {
+		this.starterKit = starterKit;
+	}
+
 	public String getEdiVersion() {
 		return ediVersion;
 	}

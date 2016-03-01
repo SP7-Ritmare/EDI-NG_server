@@ -7,7 +7,6 @@ import it.cnr.irea.ediT.exception.HostNotConfiguredException;
 import it.cnr.irea.ediT.exception.Settings;
 import it.cnr.irea.ediT.model.ErrorResponse;
 import it.cnr.irea.ediT.model.Metadata;
-import it.cnr.irea.ediT.model.MetadataListDTO;
 import it.cnr.irea.ediT.model.PostMetadataResponse;
 import it.cnr.irea.ediT.model.ServiceResponse;
 import it.cnr.irea.ediT.model.TemplateElement;
@@ -16,10 +15,14 @@ import it.cnr.irea.ediT.model.TemplateItem;
 import it.cnr.irea.ediT.model.XsltUrl;
 import it.cnr.irea.ediT.service.BaseService;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -280,4 +283,20 @@ public class RestBase extends CORSDecorator {
 			        HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			return "{\"url\": \"" + request.getRequestURL().toString() + "\", \"forwarded\":\"" + request.getHeader("X-Forwarded-Host") + "\"}";
 		}
+		
+		@RequestMapping(method = RequestMethod.GET, value = "rest/whoami", produces = MediaType.APPLICATION_JSON_VALUE)
+		public String getWhoAmIFromGeoSK() throws IOException {
+			String result = "";
+			
+			URL url = new URL("http://geosk.ve.ismar.cnr.it/whoami");
+			URLConnection conn = url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				result += inputLine;
+			}
+			in.close();
+			return result;
+		}
+		
 }

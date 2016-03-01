@@ -45,7 +45,7 @@ public class Metadata {
 	
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	
+	private String starterKit;
 	
 	private URI uri;
 	
@@ -161,6 +161,14 @@ public class Metadata {
 
 	public void setTest(boolean isTest) {
 		this.isTest = isTest;
+	}
+
+	public String getStarterKit() {
+		return starterKit;
+	}
+
+	public void setStarterKit(String starterKit) {
+		this.starterKit = starterKit;
 	}
 	
 	

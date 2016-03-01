@@ -71,7 +71,7 @@ public class BaseService {
 		String requestUrl = req.getHeader("X-Forwarded-Host");
 		String testServerPattern = getSetting("testServerPattern", "edidemo.get-it.it");
 		
-		if ( requestUrl.contains(testServerPattern) ) {
+		if ( requestUrl == null || requestUrl.contains(testServerPattern) ) {
 			return true;
 		} else {
 			return false;
@@ -88,6 +88,7 @@ public class BaseService {
 			   metadata = new Metadata();
 		   }
 		   // metadata.setStarterKit(service.getSetting("starterKit", "noSK"));
+		   metadata.setStarterKit(elementList.getStarterKit());
 		   metadata.setProcessStarted(new Date());
 		   metadata.setInput(xml);
 		   metadata.setTemplate(elementList.getTemplateDocument());

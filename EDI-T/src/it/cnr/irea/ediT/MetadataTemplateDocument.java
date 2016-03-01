@@ -94,7 +94,8 @@ public class MetadataTemplateDocument {
 	 * @param service 			the service to be used to persist results
 	 */
 	public MetadataTemplateDocument(/* MetadataTemplate templateObject, */ byte[] baseDocument, BaseService service) {
-		this.starterKit = service.getSetting("starterKit", "noSK");
+		this.service = service;
+		// this.starterKit = service.getSetting("starterKit", "noSK");
 
 		/*
 		System.setProperty("jaxp.debug","1");
@@ -318,6 +319,9 @@ public class MetadataTemplateDocument {
 	
 	public void addAll(TemplateElementList elementList) {
 		this.elementList = elementList;
+		this.starterKit = elementList.getStarterKit();
+		System.out.println("Starter Kit: " + starterKit);
+		
 		for ( TemplateElement element : elementList.getElements() ) {
 			try {
 				addElement(element);
@@ -528,7 +532,8 @@ public class MetadataTemplateDocument {
 							item.setValue(generateURN(elementList.getUser(), elementList.getTemplateName()));
 						} else if ( item.getDataType().equalsIgnoreCase("sensorID") ) {
 							String disallowedCharacters = "[^A-Za-z0-9]";
-							String SENSOR_URI = "http://sp7.irea.cnr.it/sensors/" + (starterKit != null ? starterKit : "noSK" ) + "/procedure/";
+							String baseSensorIdUrl = service.getSetting("baseSensorIdUrl", "http://sp7.irea.cnr.it/sensors/");
+							String SENSOR_URI = baseSensorIdUrl + (starterKit != null ? starterKit : "noSK" ) + "/procedure/";
 							String manufacturer = elementList.findItem("manuf_name", "3").getValue();
 							String model = elementList.findItem("mod_number", "3").getValue();
 							String serial = elementList.findItem("serial_num", "3").getValue();
