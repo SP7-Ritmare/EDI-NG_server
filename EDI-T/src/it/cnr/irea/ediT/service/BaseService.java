@@ -70,7 +70,6 @@ public class BaseService {
 	public boolean isTestServer(HttpServletRequest req) {
 		String requestUrl = req.getHeader("X-Forwarded-Host");
 		String testServerPattern = getSetting("testServerPattern", "edidemo.get-it.it");
-		
 		if ( requestUrl == null || requestUrl.contains(testServerPattern) ) {
 			return true;
 		} else {
@@ -95,6 +94,7 @@ public class BaseService {
 		   metadata.setOutput(new String(document.xmlUTF8String(xmlDoc), "utf-8"));
 		   metadata.setProcessEnded(new Date());
 		   metadata.setSynchronised(false);
+		   metadata.setTest(isTest);
 		metadata = em.merge(metadata);
 		metadata.getId();
 		em.persist(metadata);

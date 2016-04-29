@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PostMetadataResponse {
 	private int edimlId;
 	private String ip;
+	private String version = "2.1";
 	private String inputEDIML;
 	private String generatedXml;
 	private int responseCode;
@@ -19,6 +20,12 @@ public class PostMetadataResponse {
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+	public String getVersion() {
+		return version;
+	}
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	public String getInputEDIML() {
 		return inputEDIML;

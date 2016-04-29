@@ -1154,6 +1154,39 @@ public class MetadataTemplateDocument {
 		outputJaxpImplementationInfo();
 	}
 	
+	private void banner(String s) {
+		System.out.println("*********************************");
+		System.out.println(s);
+		System.out.println("*********************************");
+	}
+	
+	private Element createNode(String name, String value) {
+		Element temp = null;
+		String prefix = "";
+		String namespaceURI = "";
+		if ( name.contains(":") ) {
+			UniversalNamespaceResolver resolver1 = new UniversalNamespaceResolver(output);
+
+			prefix = name.substring(0, name.indexOf(":"));
+			// System.out.println("prefix: " + prefix);
+			namespaceURI = resolver1.getNamespaceURI(prefix);
+			try {
+				temp = output.createElementNS(namespaceURI, name);
+			} catch (DOMException e) {
+				System.err.println(namespaceURI + " - " + name + " " + e.getLocalizedMessage());
+				throw e;
+			}
+		} else {
+			try {
+				temp = output.createElement(name);
+			} catch (DOMException e) {
+				System.err.println(" - " + name + " " + e.getLocalizedMessage());
+				throw e;
+			}
+		}
+		
+		return temp;
+	}
 	
 	/**
 	 * Creates the or edit root node.
