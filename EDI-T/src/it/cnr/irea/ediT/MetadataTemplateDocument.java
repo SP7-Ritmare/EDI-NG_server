@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -632,6 +633,7 @@ public class MetadataTemplateDocument {
 								System.err.println("on element " + nodes[j].substring(1));
 								messages.add("DOM Exception on " + nodes[j].substring(1) + " - " + e.getLocalizedMessage());
 							}
+							// last.appendChild(output.createComment(comment));
 							if ( item.getFixed() != null) {
 								comment += "\nisFixed: " + item.getFixed();
 //									last.setAttribute("ediFixed", item.getFixed());
@@ -640,7 +642,6 @@ public class MetadataTemplateDocument {
 								comment += "\nhasDatatype: " + item.getDataType();
 //									last.setAttribute("ediDatatype", item.getDataType());
 							}
-//							last.appendChild(output.createComment(comment));
 						} else {
 							try {
 								found = false;
@@ -1022,7 +1023,7 @@ public class MetadataTemplateDocument {
 								System.err.println("on element " + nodes[j].substring(1));
 								messages.add("DOM Exception on " + nodes[j].substring(1) + " - " + e.getLocalizedMessage());
 							}
-							last.appendChild(output.createComment(comment));
+							// last.appendChild(output.createComment(comment));
 							if ( item.getFixed() != null) {
 								comment += "\nisFixed: " + item.getFixed();
 //									last.setAttribute("ediFixed", item.getFixed());
@@ -1188,6 +1189,143 @@ public class MetadataTemplateDocument {
 		return temp;
 	}
 	
+	private Element setAttribute(Element base, String name, String value) {
+		if ( name.contains(":") ) {
+			UniversalNamespaceResolver resolver1 = new UniversalNamespaceResolver(output);
+
+			String prefix = name.substring(0, name.indexOf(":"));
+			String namespaceURI = resolver1.getNamespaceURI(prefix);
+			base.setAttributeNS(namespaceURI, name, value);
+		} else {
+			base.setAttribute(name, value);
+		}
+		return base;
+	}
+	
+	private boolean hasAttribute(Element base, String name) {
+		if ( name.contains(":") ) {
+			UniversalNamespaceResolver resolver1 = new UniversalNamespaceResolver(output);
+
+			String prefix = name.substring(0, name.indexOf(":"));
+			String namespaceURI = resolver1.getNamespaceURI(prefix);
+			return base.hasAttributeNS(namespaceURI, name);
+		} else {
+			return base.hasAttribute(name);
+		}
+	}
+	
+	private String getAttribute(Element base, String name) {
+		if ( name.contains(":") ) {
+			UniversalNamespaceResolver resolver1 = new UniversalNamespaceResolver(output);
+
+			String prefix = name.substring(0, name.indexOf(":"));
+			String namespaceURI = resolver1.getNamespaceURI(prefix);
+			return base.getAttributeNS(namespaceURI, name);
+		} else {
+			return base.getAttribute(name);
+		}		
+	}
+	
+	private String getXPath(Node node)
+	{
+	    Node parent = node.getParentNode();
+	    if (parent == null) {
+	        return "/" + node.getNodeName();
+	    }
+	    return getXPath(parent) + "/";
+	}
+	
+	public static String getFullXPath(Node n) {
+		// abort early
+		if (null == n)
+		  return null;
+
+		// declarations
+		Node parent = null;
+		Stack<Node> hierarchy = new Stack<Node>();
+		StringBuffer buffer = new StringBuffer();
+
+		// push element on stack
+		hierarchy.push(n);
+
+		switch (n.getNodeType()) {
+		case Node.ATTRIBUTE_NODE:
+		  parent = ((Attr) n).getOwnerElement();
+		  break;
+		case Node.ELEMENT_NODE:
+		  parent = n.getParentNode();
+		  break;
+		case Node.DOCUMENT_NODE:
+		  parent = n.getParentNode();
+		  break;
+		default:
+		  throw new IllegalStateException("Unexpected Node type" + n.getNodeType());
+		}
+
+		while (null != parent && parent.getNodeType() != Node.DOCUMENT_NODE) {
+		  // push on stack
+		  hierarchy.push(parent);
+
+		  // get parent of parent
+		  parent = parent.getParentNode();
+		}
+
+		// construct xpath
+		Object obj = null;
+		while (!hierarchy.isEmpty() && null != (obj = hierarchy.pop())) {
+		  Node node = (Node) obj;
+		  boolean handled = false;
+
+		  if (node.getNodeType() == Node.ELEMENT_NODE) {
+		    Element e = (Element) node;
+
+		    // is this the root element?
+		    if (buffer.length() == 0) {
+		      // root element - simply append element name
+		      buffer.append(node.getNodeName());
+		    } else {
+		      // child element - append slash and element name
+		      buffer.append("/");
+		      buffer.append(node.getNodeName());
+
+		      if (node.hasAttributes()) {
+		        // see if the element has a name or id attribute
+		        if (e.hasAttribute("id")) {
+		          // id attribute found - use that
+		          buffer.append("[@id='" + e.getAttribute("id") + "']");
+		          handled = true;
+		        } else if (e.hasAttribute("name")) {
+		          // name attribute found - use that
+		          buffer.append("[@name='" + e.getAttribute("name") + "']");
+		          handled = true;
+		        }
+		      }
+
+		      if (!handled) {
+		        // no known attribute we could use - get sibling index
+		        int prev_siblings = 1;
+		        Node prev_sibling = node.getPreviousSibling();
+		        while (null != prev_sibling) {
+		          if (prev_sibling.getNodeType() == node.getNodeType()) {
+		            if (prev_sibling.getNodeName().equalsIgnoreCase(
+		                node.getNodeName())) {
+		              prev_siblings++;
+		            }
+		          }
+		          prev_sibling = prev_sibling.getPreviousSibling();
+		        }
+		        buffer.append("[" + prev_siblings + "]");
+		      }
+		    }
+		  } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+		    buffer.append("/@");
+		    buffer.append(node.getNodeName());
+		  }
+		}
+		// return buffer
+		return buffer.toString();
+		}   
+	
 	/**
 	 * Creates the or edit root node.
 	 *
@@ -1197,118 +1335,88 @@ public class MetadataTemplateDocument {
 	 * @return the element
 	 */
 	public Element createOrEditRootNode(Element element, String path, String value) {
-		Element temp = null;
-		boolean found = false;
-		boolean nodeCreated = false;
-		
-		XPathFactory xPathfactory = XPathFactory.newInstance();
-		XPath xpath = xPathfactory.newXPath();
-		if ( path.length() <= 0 ) {
-			return null;
-		}
-		String[] nodes = path.substring(1).split("\\/");
-		Pattern pattern = Pattern.compile(attributeRegex);
-		Matcher matcher;
-		String node = "dummy";;
-		String attribute = null;
-		String val = null;
-
-		System.out.println("createOrEditRootNode: " + path);
-		
-		XPathExpression expr;
-		if ( nodes.length > 0 && !nodes[0].trim().equalsIgnoreCase("")) {
-			// System.out.println("nodes[0] = " + nodes[0]);
-			node = nodes[0];
-			for ( int i = 0; element != null && element.getChildNodes() != null && i < element.getChildNodes().getLength(); i++ ) {
-				if ( node.contains("@") ) {
-					// It's an attribute
-					node = node.replace("\"", "'");
-					matcher = pattern.matcher(node);
-					if ( matcher.find() ) {
-						node = node.replaceAll("\\[.*\\]", "");
-						attribute = matcher.group(1);
-						val = matcher.group(2);
-						System.out.println("createOrEditRootNode: @" + attribute + "='" + val + "'");
-						if ( element.getChildNodes().item(i).getNodeName().equalsIgnoreCase(node) ) {
-							if ( element.getChildNodes().item(i).getAttributes().getLength() > 0 ) {
-								for ( int j = 0; j < element.getChildNodes().item(i).getAttributes().getLength(); j++ ) {
-									Node foundAttribute = element.getChildNodes().item(i).getAttributes().getNamedItem(attribute);
-									if ( foundAttribute != null && foundAttribute.getNodeName().equalsIgnoreCase(attribute) && foundAttribute.getNodeValue().equalsIgnoreCase(val) ) {
-										System.out.println("createOrEditRootNode: @" + attribute + "='" + val + "' already in place");
-										found = true;
-										temp = (Element) element.getChildNodes().item(i);
-										break;
-									}
+		banner(path + " -> " + value);
+		// System.out.println(xmlString(element));
+		banner("Working on " + getFullXPath((Node) element));
+		Element temp = element;
+		ArrayList<PathElement> pathElements = PathElement.parsePath(path);
+		for ( int j = 0; j < Math.min(1, pathElements.size()); j++ ) {
+			PathElement p = pathElements.get(j);
+			if ( p.isAttribute() ) {
+				if ( hasAttribute(element, p.getName()) && getAttribute(element, p.getName()).equalsIgnoreCase(p.getValue()) ) {
+					// nothing to do
+				} else {
+					if ( !hasAttribute(element, p.getName()) ) {
+						setAttribute(element, p.getName(), p.getValue());
+						banner("setting attribute " + p.getName() + " to " + p.getValue());
+					} else {
+						Element e = createNode(temp.getNodeName(), temp.getTextContent());
+						banner("creating sibling node " + p.getName() + " to " + p.getValue());
+						temp.getParentNode().appendChild(e);
+						temp = e;
+						banner("with attribute " + p.getName() + " to " + p.getValue());
+						temp = setAttribute(temp, p.getName(), p.getValue());
+					}
+				}
+			} else {
+				// it's a node
+				boolean found = false;
+				
+				for ( int i = 0; !found && i < element.getChildNodes().getLength(); i++ ) {
+					banner("Comparing " + element.getChildNodes().item(i).getNodeName() + " to " + p.getName());
+					if ( element.getChildNodes().item(i).getNodeName().equalsIgnoreCase(p.getName()) ) {
+						banner("node " + p.getName() + " found");
+						if ( PathElement.isNextAnAttribute(pathElements, j) ) {
+							PathElement pAttribute = pathElements.get(j+1);
+							if ( ((Element)element.getChildNodes().item(i)).hasAttribute(pAttribute.getName()) ) {
+								if ( !getAttribute((Element)element.getChildNodes().item(i), pAttribute.getName()).equalsIgnoreCase(pAttribute.getValue()) ) {
+									found = false;
+									banner("1");
+/*
+									Element e = createNode(temp.getNodeName(), temp.getTextContent());
+									temp.getParentNode().appendChild(e);
+									temp = e;
+									temp = setAttribute(temp, p.getName(), p.getValue());
+*/									
+								} else {
+									found = true;
+									temp = (Element) element.getChildNodes().item(i);
 								}
+							} else {
+								banner("2");
+								found = true;
+								temp = (Element) element.getChildNodes().item(i);
+								temp.setAttribute(pAttribute.getName(), pAttribute.getValue());
 							}
-							// TODO: verificare 'sto break
-							break; 
+						} else {
+							banner("3");
+							temp = (Element) element.getChildNodes().item(i);
+							found = true;
 						}
 					}
-				} else {
-					if ( element.getChildNodes().item(i).getNodeName().equalsIgnoreCase(nodes[0]) ) {
-						found = true;
-						temp = (Element) element.getChildNodes().item(i);
-						break;
-					}
 				}
-			}
-			if ( !found ) {
-				node = node.replace("\n", "");
-				if ( node.contains("[") ) {
-					// It's an attribute
-					node = node.replace("\"", "'");
-					matcher = pattern.matcher(node);
-					node = node.replaceAll("\\[.*\\]", "");
-					attribute = "";
-					val="";
-					if ( matcher.find() ) {
-						attribute = matcher.group(1);
-						val = matcher.group(2);
-					}
-				}
-				System.out.println("creating node " + node + ", " + attribute + "=" + val);
-				String prefix = "";
-				String namespaceURI = "";
-				if ( node.contains(":") ) {
-					UniversalNamespaceResolver resolver1 = new UniversalNamespaceResolver(output);
+				if ( !found ) {
+					temp = createNode(p.getName(), value);
+					banner("appending " + p.getName());
+					if ( PathElement.isNextAnAttribute(pathElements, j) ) {
+						PathElement pAttribute = pathElements.get(j+1);
+						banner("with attribute " + pAttribute.getName() + " to " + pAttribute.getValue());
 
-					prefix = node.substring(0, node.indexOf(":"));
-					// System.out.println("prefix: " + prefix);
-					namespaceURI = resolver1.getNamespaceURI(prefix);
-					try {
-						temp = output.createElementNS(namespaceURI, node);
-					} catch (DOMException e) {
-						System.err.println(namespaceURI + " - " + node + " " + e.getLocalizedMessage());
-						throw e;
+						temp = setAttribute(temp, pAttribute.getName(), pAttribute.getValue());
 					}
-				} else {
-					try {
-						temp = output.createElement(node);
-					} catch (DOMException e) {
-						System.err.println(" - " + node + " " + e.getLocalizedMessage());
-						throw e;
+					if ( value != null && PathElement.isLastNode(pathElements, j)) {
+						temp.setTextContent(value);
 					}
+					element.appendChild(temp);
+					
 				}
-				if ( attribute != null && val != null ) {
-					temp.setAttribute(attribute, val);
-				}
-				element.appendChild(temp);
 			}
-			if ( nodes.length > 1 ) {
-				String newPath = "";
-				for ( int i = 1; i < nodes.length; i++ ) {
-					newPath += "/" + nodes[i];
-				}
-				createOrEditRootNode(temp, newPath, value);
-			} else {
-				// temp.setTextContent(value);
-			}
-		} else {
-			return null;
+			banner("pathElements before: " + PathElement.toString(pathElements));
+			pathElements.remove(0);
+			banner("pathElements after: " + PathElement.toString(pathElements));
+			createOrEditRootNode(temp, PathElement.toString(pathElements), value);
+
 		}
-		// System.err.println();
-		// System.err.println(xmlString(temp));
 		return temp;
 	}
 
