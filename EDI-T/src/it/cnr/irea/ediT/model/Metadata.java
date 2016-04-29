@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -60,6 +61,7 @@ public class Metadata {
 	private Date processStarted;
 	private Date processEnded;
 	private boolean synchronised = false;
+	@Column(name="isTest", nullable=true)
 	private boolean isTest = false;
 	
 	public Metadata() {
