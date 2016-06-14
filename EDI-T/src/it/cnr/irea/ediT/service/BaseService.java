@@ -7,11 +7,14 @@ import it.cnr.irea.ediT.model.ServiceResponse;
 import it.cnr.irea.ediT.model.Setting;
 import it.cnr.irea.ediT.model.TemplateElementList;
 
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,15 @@ public class BaseService {
 		}
 	}
 	
+	public Document loadXMLFromString(String xml) throws Exception
+	{
+	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder builder = factory.newDocumentBuilder();
+
+	    return builder.parse(new ByteArrayInputStream(xml.getBytes()));
+	}
 
 	public String getHostName() {
 		return getSetting("starterKitURI", null);		

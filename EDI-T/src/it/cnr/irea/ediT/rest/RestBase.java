@@ -39,6 +39,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -157,8 +159,6 @@ public class RestBase extends CORSDecorator {
 			//			   return Response.ok(xml).build();
 			   Document xmlDoc = document.getOutput();
 				
-			   service.saveMetadata(document, xml, elementList, service.isTestServer(req));
-
 			   document.saveTo("/tmp/last_md.xml");
 
 			   try {
@@ -174,6 +174,7 @@ public class RestBase extends CORSDecorator {
 			   response.setMessages(document.getMessages());
 			   
 			   if ( elementList.getXsltChain() == null ) {
+				   service.saveMetadata(document, xml, elementList, service.isTestServer(req));
 			   } else {
 				   log.info("xsltChain is correctly defined in EDIML");
 				   String xmlTemp = new String(document.xmlUTF8String(xmlDoc), "utf-8");
@@ -187,9 +188,10 @@ public class RestBase extends CORSDecorator {
 							xmlTemp = new String(result, "utf-8");
 					   }
 				   }
+				   document.setOutput(service.loadXMLFromString(xmlTemp));
+				   service.saveMetadata(document, xml, elementList, service.isTestServer(req));
 					response.setGeneratedXml(xmlTemp);
-					
-					System.out.println("Морски");
+
 					return new ResponseEntity<PostMetadataResponse>(response, HttpStatus.OK);
 			   }
 			} catch (Exception e) {
@@ -210,6 +212,42 @@ public class RestBase extends CORSDecorator {
 	   }
 	   
 	   
+		@RequestMapping(method = RequestMethod.GET, value = "/rest/xml/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
+		@ResponseBody
+		public HttpEntity<byte[]> getXml(@PathVariable int id, @PathVariable String suffix) {
+			log.info("getXml " + id + ", " + suffix);
+			Metadata md = service.getMetadata(id);
+			
+			HttpHeaders header = new HttpHeaders();
+		    // header.setContentType(new MediaType("application", "pdf"));
+		    header.set("Content-Disposition",
+		                   "attachment; filename=generated_" + id + ".xml");
+		    // header.setContentLength(documentBody.length);
+		    
+			return new HttpEntity<byte[]>(md.getOutput().getBytes(), header);
+		}
+
+		@RequestMapping(method = RequestMethod.GET, value = "/rest/edimlFile/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
+		@ResponseBody
+		public HttpEntity<byte[]> getEdimlFile(@PathVariable int id, @PathVariable String suffix) {
+			log.info("getEdimlFile " + id + ", " + suffix);
+			Metadata md = service.getMetadata(id);
+			
+			HttpHeaders header = new HttpHeaders();
+		    // header.setContentType(new MediaType("application", "pdf"));
+		    header.set("Content-Disposition",
+		                   "attachment; filename=ediml_" + id + ".xml");
+		    // header.setContentLength(documentBody.length);
+		    Document doc = null;
+		    try {
+				doc = service.loadXMLFromString(md.getInput());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return new HttpEntity<byte[]>(doc.toString().getBytes(), header);
+		}
+
 		@RequestMapping(method = RequestMethod.GET, value = "/rest/ediml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
 		@ResponseBody
 		public String getEDIMLXml(@PathVariable int id) {
