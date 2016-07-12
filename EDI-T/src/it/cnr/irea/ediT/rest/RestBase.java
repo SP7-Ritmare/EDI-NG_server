@@ -58,6 +58,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @RestController
+@RequestMapping("rest")
 public class RestBase extends CORSDecorator {
 	static String personURI    = "http://somewhere/JohnSmith";
 	static String fullName     = "John Smith";
@@ -86,7 +87,7 @@ public class RestBase extends CORSDecorator {
 	    return ErrorResponse.HOST_NOT_CONFIGURED;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "rest/ediml/requestId", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, value = "ediml/requestId", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Metadata getNewId(HttpServletRequest request, @RequestHeader("Host") String host) throws HostNotConfiguredException {
 		if ( service.getHostName() == null ) {
@@ -99,7 +100,7 @@ public class RestBase extends CORSDecorator {
 		return md;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "rest/metadata", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "metadata", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
 	@ResponseBody
 	   public ResponseEntity<PostMetadataResponse> postMetadataNG(HttpServletRequest req, @RequestHeader(value = "X-Forwarded-For", required = false) String ip, @RequestBody String xml, @RequestHeader(value = "api_key", required = false) String apiKey) {
 		   log.info("xml: " + xml);
@@ -205,14 +206,14 @@ public class RestBase extends CORSDecorator {
 		   return new ResponseEntity<PostMetadataResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	   }
 
-	   @RequestMapping(method = RequestMethod.OPTIONS, value = "rest/metadata", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
+	   @RequestMapping(method = RequestMethod.OPTIONS, value = "metadata", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_XML_VALUE)
 	   @ResponseBody
 	   public ResponseEntity<PostMetadataResponse> optionsPostMetadata(String xml) {
 		   return new ResponseEntity<PostMetadataResponse>(HttpStatus.OK);
 	   }
 	   
 	   
-		@RequestMapping(method = RequestMethod.GET, value = "/rest/xml/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "/xml/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
 		@ResponseBody
 		public HttpEntity<byte[]> getXml(@PathVariable int id, @PathVariable String suffix) {
 			log.info("getXml " + id + ", " + suffix);
@@ -227,7 +228,7 @@ public class RestBase extends CORSDecorator {
 			return new HttpEntity<byte[]>(md.getOutput().getBytes(), header);
 		}
 
-		@RequestMapping(method = RequestMethod.GET, value = "/rest/edimlFile/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "/edimlFile/{id}.{suffix}", produces = MediaType.APPLICATION_XML_VALUE)
 		@ResponseBody
 		public HttpEntity<byte[]> getEdimlFile(@PathVariable int id, @PathVariable String suffix) {
 			log.info("getEdimlFile " + id + ", " + suffix);
@@ -248,7 +249,7 @@ public class RestBase extends CORSDecorator {
 			return new HttpEntity<byte[]>(doc.toString().getBytes(), header);
 		}
 
-		@RequestMapping(method = RequestMethod.GET, value = "/rest/ediml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "/ediml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
 		@ResponseBody
 		public String getEDIMLXml(@PathVariable int id) {
 			log.info("getEDIMLXml " + id);
@@ -256,7 +257,7 @@ public class RestBase extends CORSDecorator {
 			return md.getInput();
 		}
 		
-		@RequestMapping(method = RequestMethod.GET, value = "/rest/ediml/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "/ediml/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody
 		public TemplateElementList getEDIML(@PathVariable int id) {
 			log.info("getEDIML " + id);
@@ -310,19 +311,19 @@ public class RestBase extends CORSDecorator {
 			return elementList;
 		}
 		
-		@RequestMapping(method = RequestMethod.GET, value = "rest/metadata/sync", produces = MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "metadata/sync", produces = MediaType.APPLICATION_JSON_VALUE)
 		public ServiceResponse syncMetadata() {
 			return service.syncMetadata();
 		}
 
-		@RequestMapping(method = RequestMethod.GET, value = "rest/test", produces = MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "test", produces = MediaType.APPLICATION_JSON_VALUE)
 		public String test(HttpServletRequest request) {
 			String restOfTheUrl = (String) request.getAttribute(
 			        HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			return "{\"url\": \"" + request.getRequestURL().toString() + "\", \"forwarded\":\"" + request.getHeader("X-Forwarded-Host") + "\"}";
 		}
 		
-		@RequestMapping(method = RequestMethod.GET, value = "rest/whoami", produces = MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(method = RequestMethod.GET, value = "whoami", produces = MediaType.APPLICATION_JSON_VALUE)
 		public String getWhoAmIFromGeoSK() throws IOException {
 			String result = "";
 			
