@@ -1,39 +1,39 @@
 # EDI-NG_server
 This is the server side for [SP7-Ritmare/EDI-NG_client](https://github.com/SP7-Ritmare/EDI-NG_client).
 
-It's a [Spring](http://spring.io) Boot application configured to package as a WAR file, so as to allow deployment to, e.g., [Tomcat](http://tomcat.apache.org), relying on a [PostgreSQL](https://www.postgresql.org) database server.
-In order to deploy to Tomcat, you need to place the WAR file in Tomcat's webapps directory, or upload it via the Tomcat manager application.
+It's a [Spring](http://spring.io) Boot application configured to package as a JAR file, relying on any [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) database connector, e.g. one to a [PostgreSQL](https://www.postgresql.org) database server.
 
-A [Binary WAR file](https://github.com/SP7-Ritmare/EDI-NG_server/releases/download/v1.0/edi.war) is available via the "releases" tab.
-The WAR has been tested on Tomcat 7.
+A [demo JAR file](https://github.com/SP7-Ritmare/EDI-NG_server/releases/download/v1.0/edi.war) is available in the [demo](https://github.com/SP7-Ritmare/EDI-NG_server/tree/master/demo) directory.
 
-> The pre-packaged WAR file can be a good starting point to test the system in a reasonably "standalone" mode.
+> The pre-packaged JAR file can be a good starting point to test the system in a "standalone" mode.
 
-> It contains a built-in version of EDI-NG_client where the templates point to the EDI-NG_server packaged within, with the following pre-requisites:
-> * Tomcat should run on port 8080
-> * PostgreSQL must be installed on a host reachable from your Tomcat machine
-> * An empty database must be created in the PostgreSQL server
-> * Once deployed, you'll need to change the application.war file, present in your Tomcat host's $TOMCAT_HOME/webapps/edi/WEB-INF/classes/ directory, and then restart Tomcat
->
+> It contains a built-in version of EDI-NG_client where the templates point to the EDI-NG_server packaged within.
 
-Following is an example of the configuration you need to edit in $TOMCAT_HOME/webapps/edi/WEB-INF/classes/application.properties 
-```properties
-spring.datasource.url=jdbc:postgresql://<your PostreSQL host>/<db name you picked>
-spring.datasource.username=<username>
-spring.datasource.password=<password>
-spring.datasource.driverClassName=org.postgresql.Driver
+> **WARNING!** Demo configuration uses the [H2 in-memory database](http://www.h2database.com/html/main.html) so as to simplify EDI's configuration. **As it is an in-memory database, data won't survive a restart of the application**.
+
+All you need to do is open a terminal, go to the demo directory you downloaded, and run
+
+```bash
+./edi.sh
 ```
 
-Once all prerequisites are met, you can test the EDI-NG_client and server by pointing your browser to http://localhost:8080/ on your Tomcat machine.
+Then just point your browser to http://localhost:8080/
 
-## Building your own WAR file
+## Building your own JAR file
 If you want to build the latest release from sources, you can user [Apache Maven](https://maven.apache.org/index.html) (Apache License v2.0). In the EDI-T directory, simply run:
 ```bash
 mvn package
 ```
-This will create your WAR file in the target directory, ready for deployment.
+This will create your JAR file in the target directory, ready for deployment.
 
-Prior to create the WAR file you might want to customise the application.properties file, mentioned above, so as to match your PostgreSQL location.
+As an alternative, you can go to the "demo" directory and run:
+```bash
+./create_demo.sh
+```
+
+This will update the JAR in the demo directory and launch it with the local application.properties file as a configuration.
+
+Prior to creating the JAR file you might want to customise the application.properties file, mentioned above, so as to match your database desired location.
 
 # Dependencies
 All dependencies are listed in the *pom.xml* file.
