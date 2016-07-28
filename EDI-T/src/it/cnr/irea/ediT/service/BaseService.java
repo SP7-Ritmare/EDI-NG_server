@@ -57,7 +57,7 @@ public class BaseService {
 	}
 
 	public String getHostName() {
-		return getSetting("starterKitURI", null);		
+		return getSetting("starterKitURI", "noSK");		
 	}
 	
 	@Transactional(readOnly = true)
@@ -136,13 +136,18 @@ public class BaseService {
 		    // restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		    
 	// 	    MetadataListDTO result = restTemplate.postForObject(getSetting("md_principal", "http://localhost:8081/registry/metadata"), dto, MetadataListDTO.class);
-		    ServiceResponse result = restTemplate.postForObject(getSetting("md_principal", "http://localhost:8081/registry/metadata"), entity, ServiceResponse.class);
-		    
-		    if ( result.getCode() == 200 ) {
-		    	for ( Metadata m : dto.getMetadata() ) {
-		    		m.setSynchronised(true);
-		    		em.merge(m);
-		    	}
+		    ServiceResponse result = null;
+		    try {
+			    result = restTemplate.postForObject(getSetting("md_principal", "http://localhost:8081/registry/metadata"), entity, ServiceResponse.class);
+			    
+			    if ( result.getCode() == 200 ) {
+			    	for ( Metadata m : dto.getMetadata() ) {
+			    		m.setSynchronised(true);
+			    		em.merge(m);
+			    	}
+			    }
+		    } catch(Exception e) {
+		    	
 		    }
 		    
 		    return result;

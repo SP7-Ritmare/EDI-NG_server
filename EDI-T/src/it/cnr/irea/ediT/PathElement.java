@@ -119,7 +119,7 @@ public class PathElement {
 		}
 		return false;
 	}
-	
+/*	
 	public static void main(String[] args) {
 		// String test = "/sml:PhysicalSystem/sml:characteristics[@name='generalProperties']/sml:CharacteristicList/sml:characteristic[@name='platform_physical_properties']/swe:DataRecord[@definition='platform_physical_properties']/swe:field[@name='Dimensions_and_General_Facts']/swe:DataRecord";
 		String test = "sml:CharacteristicList/sml:characteristic[@name='platform_physical_properties']/swe:DataRecord[@definition='platform_physical_properties']/swe:field/swe:DataRecord";
@@ -132,5 +132,5 @@ public class PathElement {
 		System.out.println();
 		System.out.println(PathElement.toString(paths));
 	}
-
+*/
 }
