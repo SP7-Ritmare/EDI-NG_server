@@ -3,7 +3,7 @@ This is the server side for [SP7-Ritmare/EDI-NG_client](https://github.com/SP7-R
 
 It's a [Spring](http://spring.io) Boot application configured to package as a JAR file, relying on any [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) database connector, e.g. one to a [PostgreSQL](https://www.postgresql.org) database server.
 
-A [demo JAR file](https://github.com/SP7-Ritmare/EDI-NG_server/releases/download/v1.0/edi.war) is available in the [demo](https://github.com/SP7-Ritmare/EDI-NG_server/tree/master/demo) directory.
+A [demo JAR file](https://github.com/SP7-Ritmare/EDI-NG_server/releases/download/v1.2/edi.zip) is available in the [demo](https://github.com/SP7-Ritmare/EDI-NG_server/tree/master/demo) directory.
 
 > The pre-packaged JAR file can be a good starting point to test the system in a "standalone" mode.
 
