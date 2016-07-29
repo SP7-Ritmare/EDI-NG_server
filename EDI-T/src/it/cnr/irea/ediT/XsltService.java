@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +87,17 @@ public class XsltService {
 		return outStream.toByteArray();
 	}
 	
+	public boolean pingHost(String host, int port, int timeout) {
+	    try (Socket socket = new Socket()) {
+	    	InetSocketAddress address = new InetSocketAddress(host, port);
+	    	log.info("pinging " + address.getAddress().getHostAddress());
+	        socket.connect(address, timeout);
+	        return true;
+	    } catch (IOException e) {
+	        return false; // Either timeout or unreachable or failed DNS lookup.
+	    }
+	}
+	
 	/*
 	 * @param xslt URL of XSLT file or XSLT text
 	 * @param xml URL of XML file or XML text
@@ -102,8 +117,16 @@ public class XsltService {
 		try {
 			// if it qualifies as a URL open a URL stream
 			URL xsltUrl = new URL(xslt);
+			if ( pingHost(xsltUrl.getHost(), 80, 100) ) {
+				log.info("PING succeeded");
+			} else {
+				log.severe("PING FAILED");
+			}
+			log.info("xslt URL '" + xsltUrl.toExternalForm() + "'");
+			URLConnection conn = xsltUrl.openConnection();
+			conn.connect();
+			log.info("xslt contains: " + conn.getContent());
 			xsltStream = xsltUrl.openStream();
-			log.info("xslt from " + xslt);
 		} catch(MalformedURLException e) {
 			// otherwise treat it as a byte array
 			xsltStream = new ByteArrayInputStream(xslt.getBytes());

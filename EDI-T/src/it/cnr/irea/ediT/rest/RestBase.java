@@ -180,13 +180,17 @@ public class RestBase extends CORSDecorator {
 				   log.info("xsltChain is correctly defined in EDIML");
 				   String xmlTemp = new String(document.xmlUTF8String(xmlDoc), "utf-8");
 				   for ( XsltUrl xslt : elementList.getXsltChain() ) {
-					   if ( xslt.getXslt() != null ) {
-						   log.info("xmlTemp: ");
-						   log.info(xmlTemp);
+					   if ( xslt != null ) {
+						   if ( xslt.getXslt() != null ) {
+							   log.severe("Transforming result with " + xslt.getXslt());
+							   log.info("xmlTemp: ");
+							   log.info(xmlTemp);
 
-						   log.info("Transforming result with " + xslt.getXslt());
-							byte[] result = xsltService.transform(xslt.getXslt(), xmlTemp , (HashMap<String, String>) null);
-							xmlTemp = new String(result, "utf-8");
+								byte[] result = xsltService.transform(xslt.getXslt(), xmlTemp , (HashMap<String, String>) null);
+								xmlTemp = new String(result, "utf-8");
+						   }
+					   } else {
+						   log.severe("XSLT is NULL!!!");
 					   }
 				   }
 				   document.setOutput(service.loadXMLFromString(xmlTemp));
