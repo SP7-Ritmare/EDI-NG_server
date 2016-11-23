@@ -12,9 +12,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class TemplateElement {
 	private String id;
+	/**
+	 * matches hasRoot in template
+	 */
 	private String root;
+	/**
+	 * matches isMandatory in template
+	 */
 	private String mandatory;
 	private String label;
+	/**
+	 * list of items: in the template it is wrapped by the <produces> tag
+	 */
 	private List<TemplateItem> items;
 	
 	public String getId() {

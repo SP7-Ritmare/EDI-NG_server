@@ -9,17 +9,48 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class TemplateItem {
 	
+	/**
+	 * matches template element's id + "_" + item's hasIndex
+	 */
 	private String id;
+	/**
+	 * parent element's id
+	 */
 	private String elementId;
+	/**
+	 * matches hasPath in element
+	 */
 	private String path;
+	/**
+	 * URI version of item's value
+	 */
 	private String codeValue;
+	/**
+	 * URN version of item's value
+	 */
 	private String urnValue;
+	/**
+	 * version to be used of item's value
+	 */
+
 	private String value;
+	/**
+	 * matches hasDatatype in template
+	 */
 	private String dataType;
+	/**
+	 * matches isFixed in template
+	 */
 	private String fixed;
 	private String isLanguageNeutral;
 	private String languageNeutral;
+	/**
+	 * the value version to be used is the URI
+	 */
 	private String useCode;
+	/**
+	 * the value version to be used is the URN
+	 */
 	private String useURN;
 	private String outIndex;
 	private String datasource;
