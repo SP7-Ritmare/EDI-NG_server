@@ -1,4 +1,4 @@
-FROM tomcat:9-alpine
+FROM postgres:9.6.5
 
 # This image is a version of the EDI-NG-Client Docker image
 
