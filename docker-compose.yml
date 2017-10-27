@@ -6,8 +6,8 @@ services:
         image: postgres
         restart: always
         environment:
-            POSTGRES_PASSWORD: ritmare2013
-            POSTGRES_DB: edi
+            - POSTGRES_PASSWORD=yourpassword
+            - POSTGRES_DB=edi
         container_name: pg-edi
     edi-server:
         image: java:8-jdk-alpine
