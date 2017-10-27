@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+
+    pg_edi:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: ritmare2013
+            POSTGRES_DB: edi
+        container_name: pg-edi
+    edi-server:
+        image: java:8-jdk-alpine
+        restart: always
+        depends_on:
+            - pg_edi
+        container_name: edi-server
+        restart: always
+        ports:
+            - 8080:8080
+        volumes:
+            - ./dockerdemo:/app
+        working_dir: /app/
+        command: /app/edi.sh
+    # edi-client:
+        # image: ireami/eding-client
+        # depends_on:
+            # - edi.get-it.it
+        # ports:
+            # - 9997:80
+volumes:
+        db_data:
+
