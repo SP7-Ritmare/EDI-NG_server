@@ -21,6 +21,16 @@ public class TemplateElement {
 	 */
 	private String mandatory;
 	private String label;
+	private String represents_element;
+
+	public String getRepresents_element() {
+		return represents_element;
+	}
+
+	public void setRepresents_element(String represents_element) {
+		this.represents_element = represents_element;
+	}
+
 	/**
 	 * list of items: in the template it is wrapped by the <produces> tag
 	 */

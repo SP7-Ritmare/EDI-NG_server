@@ -2,66 +2,39 @@ package it.cnr.irea.ediT;
 
 import it.cnr.irea.ediT.exception.RootElementNotFoundException;
 import it.cnr.irea.ediT.exception.Settings;
-import it.cnr.irea.ediT.model.Setting;
 import it.cnr.irea.ediT.model.TemplateElement;
 import it.cnr.irea.ediT.model.TemplateElementList;
 import it.cnr.irea.ediT.model.TemplateItem;
 import it.cnr.irea.ediT.service.BaseService;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.security.CodeSource;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.parboiled.common.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
-
-import org.parboiled.common.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import javax.xml.xpath.*;
+import java.io.*;
+import java.security.CodeSource;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class MetadataTemplateDocument {
 	private static DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	private static DocumentBuilder dBuilder;
 	private static XPathFactory xPathfactory = XPathFactory.newInstance();
+	private static TransformerFactory tf = TransformerFactory.newInstance();
+	private Transformer transformer;
 	private List<String> messages = new ArrayList<String>();
 	@Autowired
 	BaseService service;
@@ -161,6 +134,15 @@ public class MetadataTemplateDocument {
 		// saveTo(output, "data/out.xml");
 	}
 
+	private Transformer getNewTransformer() throws TransformerConfigurationException {
+		transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+		return transformer;
+	}
+
 	public String generateURN(String userUri, String fileType) {
 		return generateURN(Settings.get("organisation", "CNR"), Settings.get("organisation_unit", "IREA"), fileType);
 	}
@@ -194,9 +176,7 @@ public class MetadataTemplateDocument {
 	public String xmlString(Node node) {
 		Transformer transformer;
 		try {
-			transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer = getNewTransformer();
 			StreamResult result = new StreamResult(new StringWriter());
 			DOMSource source = new DOMSource(node);
 			
@@ -209,13 +189,7 @@ public class MetadataTemplateDocument {
 			String xmlString = result.getWriter().toString();
 			*/
 			return xmlString;
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
+		} catch (TransformerFactoryConfigurationError | TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -228,10 +202,7 @@ public class MetadataTemplateDocument {
 		byte[] output = null;
 		
 		try {
-			transformer = tf.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer = getNewTransformer();
 			ByteArrayOutputStream writer = new ByteArrayOutputStream();
 			transformer.transform(new DOMSource(doc), new StreamResult(writer));
 			output = writer.toByteArray()/*.replaceAll("\n|\r", "")*/;
@@ -258,13 +229,10 @@ public class MetadataTemplateDocument {
 		String output = null;
 		Document doc = this.getOutput();
 		try {
-			transformer = tf.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			FileWriter writer = new FileWriter(fileName);
-			transformer.transform(new DOMSource(doc), new StreamResult(writer));
-			// output = writer.getBuffer().toString()/*.replaceAll("\n|\r", "")*/;
+			transformer = getNewTransformer();
+			FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+			transformer.transform(new DOMSource(doc), new StreamResult(fileOutputStream));
+			// output = fileOutputStream.getBuffer().toString()/*.replaceAll("\n|\r", "")*/;
 		} catch (TransformerConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1335,9 +1303,9 @@ public class MetadataTemplateDocument {
 	 * @return the element
 	 */
 	public Element createOrEditRootNode(Element element, String path, String value) {
-		banner(path + " -> " + value);
+		// banner(path + " -> " + value);
 		// System.out.println(xmlString(element));
-		banner("Working on " + getFullXPath((Node) element));
+		// banner("Working on " + getFullXPath((Node) element));
 		Element temp = element;
 		ArrayList<PathElement> pathElements = PathElement.parsePath(path);
 		for ( int j = 0; j < Math.min(1, pathElements.size()); j++ ) {
@@ -1348,13 +1316,13 @@ public class MetadataTemplateDocument {
 				} else {
 					if ( !hasAttribute(element, p.getName()) ) {
 						setAttribute(element, p.getName(), p.getValue());
-						banner("setting attribute " + p.getName() + " to " + p.getValue());
+						// banner("setting attribute " + p.getName() + " to " + p.getValue());
 					} else {
 						Element e = createNode(temp.getNodeName(), temp.getTextContent());
-						banner("creating sibling node " + p.getName() + " to " + p.getValue());
+						// banner("creating sibling node " + p.getName() + " to " + p.getValue());
 						temp.getParentNode().appendChild(e);
 						temp = e;
-						banner("with attribute " + p.getName() + " to " + p.getValue());
+						// banner("with attribute " + p.getName() + " to " + p.getValue());
 						temp = setAttribute(temp, p.getName(), p.getValue());
 					}
 				}
@@ -1363,15 +1331,14 @@ public class MetadataTemplateDocument {
 				boolean found = false;
 				
 				for ( int i = 0; !found && i < element.getChildNodes().getLength(); i++ ) {
-					banner("Comparing " + element.getChildNodes().item(i).getNodeName() + " to " + p.getName());
+					// banner("Comparing " + element.getChildNodes().item(i).getNodeName() + " to " + p.getName());
 					if ( element.getChildNodes().item(i).getNodeName().equalsIgnoreCase(p.getName()) ) {
-						banner("node " + p.getName() + " found");
+						// banner("node " + p.getName() + " found");
 						if ( PathElement.isNextAnAttribute(pathElements, j) ) {
 							PathElement pAttribute = pathElements.get(j+1);
 							if ( ((Element)element.getChildNodes().item(i)).hasAttribute(pAttribute.getName()) ) {
 								if ( !getAttribute((Element)element.getChildNodes().item(i), pAttribute.getName()).equalsIgnoreCase(pAttribute.getValue()) ) {
 									found = false;
-									banner("1");
 /*
 									Element e = createNode(temp.getNodeName(), temp.getTextContent());
 									temp.getParentNode().appendChild(e);
@@ -1383,13 +1350,11 @@ public class MetadataTemplateDocument {
 									temp = (Element) element.getChildNodes().item(i);
 								}
 							} else {
-								banner("2");
 								found = true;
 								temp = (Element) element.getChildNodes().item(i);
 								temp.setAttribute(pAttribute.getName(), pAttribute.getValue());
 							}
 						} else {
-							banner("3");
 							temp = (Element) element.getChildNodes().item(i);
 							found = true;
 						}
@@ -1397,10 +1362,10 @@ public class MetadataTemplateDocument {
 				}
 				if ( !found ) {
 					temp = createNode(p.getName(), value);
-					banner("appending " + p.getName());
+					// banner("appending " + p.getName());
 					if ( PathElement.isNextAnAttribute(pathElements, j) ) {
 						PathElement pAttribute = pathElements.get(j+1);
-						banner("with attribute " + pAttribute.getName() + " to " + pAttribute.getValue());
+						// banner("with attribute " + pAttribute.getName() + " to " + pAttribute.getValue());
 
 						temp = setAttribute(temp, pAttribute.getName(), pAttribute.getValue());
 					}
@@ -1411,9 +1376,9 @@ public class MetadataTemplateDocument {
 					
 				}
 			}
-			banner("pathElements before: " + PathElement.toString(pathElements));
+			// banner("pathElements before: " + PathElement.toString(pathElements));
 			pathElements.remove(0);
-			banner("pathElements after: " + PathElement.toString(pathElements));
+			// banner("pathElements after: " + PathElement.toString(pathElements));
 			createOrEditRootNode(temp, PathElement.toString(pathElements), value);
 
 		}

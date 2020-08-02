@@ -3,25 +3,26 @@ version: '3.1'
 services:
 
     pg_edi:
-        image: postgres
+        image: library/postgres:9.4-alpine
         restart: always
+        ports:
+            - 9898:5432
         environment:
-            - POSTGRES_PASSWORD=yourpassword
+            - POSTGRES_PASSWORD=postgres
             - POSTGRES_DB=edi
         container_name: pg-edi
     edi-server:
-        image: java:8-jdk-alpine
-        restart: always
+        image: registry.adamassoft.it/server_edi
         depends_on:
             - pg_edi
         container_name: edi-server
         restart: always
         ports:
-            - 8080:8080
-        volumes:
-            - ./dockerdemo:/app
+            - 58080:8080
+#        volumes:
+#            - ./dockerdemo:/app
         working_dir: /app/
-        command: /app/edi.sh
+#        command: /app/edi.sh
     # edi-client:
         # image: ireami/eding-client
         # depends_on:

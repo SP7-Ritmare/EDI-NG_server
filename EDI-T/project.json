@@ -1,0 +1,11 @@
+{
+    "name": "edi",
+    "publishConfig": {
+        "deploymentUrls": [
+            "https://portainer.adamassoft.it/api/webhooks/6388fa62-af06-4a0e-adb2-c22dedc66baa"
+        ],
+        "project": "server",
+        "registry": "registry.adamassoft.it"
+    },
+    "version": "1.0.17"
+}

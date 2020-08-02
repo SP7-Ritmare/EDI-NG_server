@@ -1,22 +1,8 @@
 package it.cnr.irea.ediT.service;
 
 import it.cnr.irea.ediT.MetadataTemplateDocument;
-import it.cnr.irea.ediT.model.Metadata;
-import it.cnr.irea.ediT.model.MetadataListDTO;
-import it.cnr.irea.ediT.model.ServiceResponse;
-import it.cnr.irea.ediT.model.Setting;
-import it.cnr.irea.ediT.model.TemplateElementList;
-
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-
-import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.log4j.Logger;
+import it.cnr.irea.ediT.model.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,13 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 
+import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+
+// import org.apache.log4j.Logger;
+
+@Slf4j
 @Transactional
 @Service
 public class BaseService {
 	@Autowired
 	EntityManager em;
 	
-	Logger log = Logger.getRootLogger();
 	static int counter = 0;
 
 	@Scheduled(fixedDelay = 1000)
