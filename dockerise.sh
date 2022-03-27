@@ -10,6 +10,7 @@ IMAGE_NAME=fabiopav/edi-ng_server && \
 npm version patch && \
 VERSION=$(cat package.json | jq -r ".version") && \
 cd EDI-T && \
+mvn package && \
 docker build -t $IMAGE_NAME:$VERSION -t $IMAGE_NAME:latest . && \
 docker push $IMAGE_NAME:$VERSION
 docker push $IMAGE_NAME:latest
