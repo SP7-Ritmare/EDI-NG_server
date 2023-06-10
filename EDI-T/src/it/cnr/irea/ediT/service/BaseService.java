@@ -2,7 +2,7 @@ package it.cnr.irea.ediT.service;
 
 import it.cnr.irea.ediT.MetadataTemplateDocument;
 import it.cnr.irea.ediT.model.*;
-import lombok.extern.slf4j.Slf4j;
+//import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +24,7 @@ import java.util.Date;
 
 // import org.apache.log4j.Logger;
 
-@Slf4j
+//@Slf4j
 @Transactional
 @Service
 public class BaseService {

@@ -260,12 +260,14 @@ public class RestBase extends CORSDecorator {
         if (md == null) {
             throw new MetadataNotFoundException();
         }
-
         HttpHeaders header = new HttpHeaders();
         // header.setContentType(new MediaType("application", "pdf"));
         header.set("Content-Disposition",
                 "attachment; filename=ediml_" + id + ".xml");
         // header.setContentLength(documentBody.length);
+        return new HttpEntity<>(md.getInput().getBytes(), header);
+
+/*
         Document doc = null;
         try {
             doc = service.loadXMLFromString(md.getInput());
@@ -274,6 +276,7 @@ public class RestBase extends CORSDecorator {
             e.printStackTrace();
         }
         return new HttpEntity<byte[]>(doc.toString().getBytes(), header);
+*/
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/ediml/{id}", produces = {MediaType.APPLICATION_XML_VALUE})

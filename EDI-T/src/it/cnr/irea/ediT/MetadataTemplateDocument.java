@@ -167,10 +167,9 @@ public class MetadataTemplateDocument {
 			Integer value = autoNumber.get(element);
 			autoNumber.put(element, ++value);
 			return value;
-		} else {
-			autoNumber.put(element, 1);
-			return 1;
 		}
+		autoNumber.put(element, 1);
+		return 1;
 	}
 	
 	public String xmlString(Node node) {
