@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #!/bin/bash
+# docker buildx create --platform=linux/amd64 --name multiarch --driver docker-container —use
 
 echo "Insert commit message:"
 read message
