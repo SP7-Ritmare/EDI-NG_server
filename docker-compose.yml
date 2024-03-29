@@ -15,7 +15,7 @@ services:
             - db_data:/var/lib/postgresql/data/
     edi-server:
         # image: registry.adamassoft.it/server_edi
-        image: fabiopav/edi-ng_server:2.0.9
+        image: fabiopav/edi-ng_server:2.0.10
         depends_on:
             - pg_edi
         container_name: edi-server
