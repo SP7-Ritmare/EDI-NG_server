@@ -11,8 +11,11 @@ services:
             - POSTGRES_PASSWORD=postgres
             - POSTGRES_DB=edi
         container_name: pg-edi
+        volumes:
+            - db_data:/var/lib/postgresql/data/
     edi-server:
-        image: registry.adamassoft.it/server_edi
+        # image: registry.adamassoft.it/server_edi
+        image: fabiopav/edi-ng_server:2.0.9
         depends_on:
             - pg_edi
         container_name: edi-server
